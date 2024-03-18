@@ -607,14 +607,6 @@ function App() {
 
       let userTokenBalanceFetch = await checkTokenBalance(userAddress);
       //console.log("the user token balance is ", userTokenBalanceFetch);
-
-      ///the total supply
-      //console.log("the contract address is ", ContractAddress);
-      //const contractRO = new ethers.Contract(ContractAddress, ABI, provider);
-      // const Sign = contractRO.connect(signer);
-      // console.log("The sign is ", Sign);
-      // setCallSigner(Sign);
-      //console.log("the contract is ", contractRO);
     }
   };
 
@@ -681,13 +673,37 @@ function App() {
       startTime: startTimeInEth,
       endTime: endTimeInEth,
     }));
+    setStartDate("");
+    setStartTime("");
+    setEndDate("");
+    setEndTime("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     console.log("Form data:", formData);
     // Add logic to submit form data
+
+    if (signer == null) {
+      console.log("the signer isnull");
+      provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+      console.log("now the signer is ", signer);
+    }
+
+    const contract = new ethers.Contract(ContractAddress, ABI, signer);
+    console.log("the signer is ", signer);
+    console.log("the contract is ", contract);
+
+    const submitProposal = await contract.submitProposal(
+      formData.description,
+      formData.options,
+      formData.startTime,
+      formData.endTime
+    );
+
+    console.log("the submitProposal is ", submitProposal);
 
     setFormData({
       description: "",
@@ -695,12 +711,7 @@ function App() {
       startTime: null,
       endTime: null,
     });
-    setStartDate(null);
-    setStartTime(null);
-    setEndDate(null);
-    setEndTime(null);
   };
-
   ///////////////////////////////////////////////
   ///////////////////////////////////////////////
 
@@ -783,8 +794,10 @@ function App() {
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
-              <div>
-                <button onClick={handleTimeStamp}>Assign the Timestamp</button>
+              <div style={{ margin: "20px" }}>
+                <button type="button" onClick={handleTimeStamp}>
+                  Assign the Timestamp
+                </button>
               </div>
             </div>
 

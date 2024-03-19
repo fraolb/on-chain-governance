@@ -9,7 +9,7 @@ contract WEB3ETH is ERC20 {
     constructor(
         address liquidityFeesWallet1
     ) ERC20("Web3Foundation", "WEB3ETH") {
-        _mint(_msgSender(), 1000 * 10 ** 18);
+        _mint(_msgSender(), 1000000 * 10 ** 18);
         liquidityFeeWallet = liquidityFeesWallet1;
     }
 

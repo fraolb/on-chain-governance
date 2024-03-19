@@ -24,8 +24,8 @@ function App() {
   const [endTime, setEndTime] = useState();
   const [endDate, setEndDate] = useState();
 
-  const ContractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-  const TokenContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const ContractAddress = "0x7Fe766F35acED48a76c49e215D929604c9dD0991";
+  const TokenContractAddress = "0x22072f8Ac3f2Dd4E635c9fF3b9bf44DeF9502268";
 
   let signer = null;
   let provider;
@@ -42,6 +42,37 @@ function App() {
       ],
       stateMutability: "nonpayable",
       type: "constructor",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "sender",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "proposalIndex",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "startTime",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "endTime",
+          type: "uint256",
+        },
+      ],
+      name: "submitProposalEvent",
+      type: "event",
     },
     {
       inputs: [
@@ -703,7 +734,7 @@ function App() {
       formData.endTime
     );
 
-    console.log("the submitProposal is ", submitProposal);
+    submitProposal.console.log("the submitProposal is ", submitProposal);
 
     setFormData({
       description: "",

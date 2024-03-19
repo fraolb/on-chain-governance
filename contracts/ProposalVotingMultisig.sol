@@ -21,6 +21,14 @@ contract ProposalApprovalMultiSig {
         mapping(uint256 => uint256) voteCounts;
     }
 
+    ///events
+    event submitProposalEvent(
+        address indexed sender,
+        uint indexed proposalIndex,
+        uint256 startTime,
+        uint256 endTime
+    );
+
     Proposal[] public Proposals;
     mapping(uint => mapping(address => bool)) public approvals;
 
@@ -57,6 +65,13 @@ contract ProposalApprovalMultiSig {
         for (uint256 i = 0; i < _options.length; i++) {
             newProposal.voteCounts[i] = 0; // Initialize vote count for each option to 0
         }
+        uint proposalIndex = Proposals.length - 1;
+        emit submitProposalEvent(
+            msg.sender,
+            proposalIndex,
+            _startTime,
+            _endTime
+        );
     }
 
     function voteProposal(

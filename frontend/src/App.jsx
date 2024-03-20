@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 
+import Box from "@mui/material/Box";
+import EthImg from "./assets/EthImage.png";
+import EthIcon from "./assets/ethereum.png";
+import { Button, Grid, TextField, Typography } from "@mui/material";
+
 function App() {
   //EtH values
   const [balance, setBalance] = useState(0);
@@ -10,6 +15,9 @@ function App() {
   // The Token value and wallet address
   const [tokenBalance, setTokenBalance] = useState(0);
   const [walletAddress, setWalletAddress] = useState("");
+
+  const firstPart = walletAddress?.substring(0, 6);
+  const lastPart = walletAddress?.substring(walletAddress.length - 4);
 
   //inputs from owners
   const [formData, setFormData] = useState({
@@ -761,35 +769,80 @@ function App() {
   }, []);
 
   return (
-    <>
-      <div className="App">
-        <h2>Hello</h2>
-        <h4>The Contract ETH balance: {balance}</h4>
-        <h4>the user ETH Balance is : {userBalance}</h4>
-
-        <div>
-          <h2>Token Balance Checker</h2>
-          <p>Wallet Address: {walletAddress}</p>
-          <p>Token Balance: {tokenBalance}</p>
-        </div>
-
-        <div>
+    <Box className="body">
+      <Box className="header" height={{ xs: "100vh", md: "70vh" }}>
+        <Box display={"flex"} justifyContent={"right"} padding={4}>
+          {walletAddress == "" ? (
+            <Button variant="outlined" onClick={ConnectWallet}>
+              Connect Wallet
+            </Button>
+          ) : (
+            <Box display={"flex"}>
+              <Box display={"flex"} mr={2}>
+                <img
+                  src={EthIcon}
+                  style={{
+                    height: "30px",
+                    width: "auto",
+                  }}
+                />
+                <Typography variant="h6">
+                  {Number(userBalance).toFixed(2)}
+                </Typography>
+              </Box>
+              <Typography
+                variant="h6"
+                border={"solid"}
+                style={{ borderRadius: "5px" }}
+                pl={2}
+                pr={2}
+              >
+                {firstPart}...{lastPart}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        <Grid container spacing={2} padding={4}>
+          <Grid item xs={12} md={7}>
+            <Typography variant="h2" textAlign={"center"}>
+              <h6 style={{ padding: 0, margin: 0 }}>Welcome to the </h6>
+              <h1 style={{ padding: 0, margin: 0 }}> DAO</h1> Govenrnance System
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <Box mt={{ xs: 0, md: "30px" }}>
+              <img
+                src={EthImg}
+                style={{
+                  height: "auto",
+                  width: "100%",
+                  borderRadius: "20px",
+                }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box mt={2}>
+        <Typography variant="h4">Create a Proposal</Typography>
+        <Box>
           <form onSubmit={handleSubmit}>
-            <div>
+            <Box>
               <label>Description:</label>
-              <input
+              <TextField
+                variant="standard"
                 type="text"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
               />
-            </div>
-            <div>
+            </Box>
+            <Box>
               <label>Options:</label>
               {formData.options.map((option, index) => (
-                <div key={index}>
+                <Box key={index}>
                   <input type="text" value={option} readOnly />
-                </div>
+                </Box>
               ))}
               <input
                 type="text"
@@ -800,9 +853,9 @@ function App() {
               <button type="button" onClick={handleOptionAdd}>
                 Add Option
               </button>
-            </div>
-            <div>
-              <div>
+            </Box>
+            <Box>
+              <Box>
                 <label>Start Time (ETH):</label>
                 <input
                   type="time"
@@ -816,8 +869,8 @@ function App() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
-              </div>
-              <div>
+              </Box>
+              <Box>
                 <label>End Time (ETH):</label>
                 <input
                   type="time"
@@ -831,19 +884,29 @@ function App() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                 />
-              </div>
-              <div style={{ margin: "20px" }}>
+              </Box>
+              <Box style={{ margin: "20px" }}>
                 <button type="button" onClick={handleTimeStamp}>
                   Assign the Timestamp
                 </button>
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             <button type="submit">Submit</button>
           </form>
-        </div>
-      </div>
-    </>
+        </Box>
+      </Box>
+      <Box>
+        <h4>The Contract ETH balance: {balance}</h4>
+        <h4>the user ETH Balance is : {userBalance}</h4>
+
+        <Box>
+          <h2>Token Balance Checker</h2>
+          <p>Wallet Address: {walletAddress}</p>
+          <p>Token Balance: {tokenBalance}</p>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

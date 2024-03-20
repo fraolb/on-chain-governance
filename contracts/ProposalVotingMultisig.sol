@@ -37,6 +37,7 @@ contract ProposalApprovalMultiSig {
         uint256 startTime,
         uint256 endTime
     );
+    event voteProposalEvent(address indexed sender, bool indexed success);
 
     Proposal[] Proposals;
     mapping(uint => mapping(address => bool)) public approvals;
@@ -104,6 +105,8 @@ contract ProposalApprovalMultiSig {
         approvals[proposalIndex][msg.sender] = true;
 
         proposal.voteCounts[optionIndex]++; // Increment the vote count for the chosen option
+
+        emit voteProposalEvent(msg.sender, true);
     }
 
     function getWinningOption(

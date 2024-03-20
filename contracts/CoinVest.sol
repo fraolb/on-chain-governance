@@ -8,6 +8,13 @@ contract WEB3ETH is ERC20 {
     address public liquidityFeeWallet;
     AggregatorV3Interface internal dataFeed;
 
+    event buyWEB3ETHEvent(address indexed sender, uint indexed amount);
+    event transferEvent(
+        address indexed sender,
+        address indexed reciever,
+        uint256 amount
+    );
+
     constructor(
         address liquidityFeesWallet1
     ) ERC20("Web3Foundation", "WEB3ETH") {
@@ -24,13 +31,14 @@ contract WEB3ETH is ERC20 {
     ) public override returns (bool) {
         address owner = _msgSender();
         require(value < super.balanceOf(owner), "Not enough balance");
-        uint256 theFeeValue = value - (value * 90) / 100;
+        uint256 theFeeValue = value - (value * 95) / 100;
         uint256 theTransactionAmount = value - theFeeValue;
         require(theFeeValue > 0, "The fees are 0");
         console.log(theTransactionAmount);
         console.log(theFeeValue);
         super._transfer(owner, to, theTransactionAmount);
         super._transfer(owner, liquidityFeeWallet, theFeeValue);
+        emit transferEvent(owner, to, value);
         return true;
     }
 
@@ -40,13 +48,7 @@ contract WEB3ETH is ERC20 {
     }
 
     function buyWEB3ETH() public payable {
-        (
-            ,
-            /* uint80 roundID */ int answer /*uint startedAt*/ /*uint timeStamp*/ /*uint80 answeredInRound*/,
-            ,
-            ,
-
-        ) = dataFeed.latestRoundData();
+        (, int answer, , , ) = dataFeed.latestRoundData();
         require(answer > 0, "Invalid ETH price from Chainlink");
 
         // Convert int answer to uint for multiplication
@@ -57,5 +59,6 @@ contract WEB3ETH is ERC20 {
 
         // Mint the tokens to the buyer
         _mint(_msgSender(), tokensToMint);
+        emit buyWEB3ETHEvent(msg.sender, tokensToMint);
     }
 }

@@ -734,7 +734,14 @@ function App() {
       formData.endTime
     );
 
-    submitProposal.console.log("the submitProposal is ", submitProposal);
+    await console.log("the submitProposal is ", submitProposal);
+
+    const result = await submitProposal.wait();
+    console.log("the result is ", result);
+    console.log("the result log is ", result.logs);
+    console.log("the result log array is ", result.logs[0].args);
+    console.log("the result log array first data is ", result.logs[0].args[0]);
+    console.log("the result log array second data is ", result.logs[0].args[1]);
 
     setFormData({
       description: "",

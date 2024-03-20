@@ -21,6 +21,15 @@ contract ProposalApprovalMultiSig {
         mapping(uint256 => uint256) voteCounts;
     }
 
+    struct ProposalInfo {
+        string description;
+        string[] options;
+        uint256[] optionsVal;
+        uint256 startTime;
+        uint256 endTime;
+        bool executed;
+    }
+
     ///events
     event submitProposalEvent(
         address indexed sender,
@@ -29,7 +38,7 @@ contract ProposalApprovalMultiSig {
         uint256 endTime
     );
 
-    Proposal[] public Proposals;
+    Proposal[] Proposals;
     mapping(uint => mapping(address => bool)) public approvals;
 
     constructor(address _tokenAddress) {
@@ -132,6 +141,25 @@ contract ProposalApprovalMultiSig {
         }
 
         return voteCounts;
+    }
+
+    function viewProposals() public view returns (ProposalInfo[] memory) {
+        uint256 numProposals = Proposals.length;
+        ProposalInfo[] memory proposalInfo = new ProposalInfo[](numProposals);
+
+        for (uint256 i = 0; i < numProposals; i++) {
+            uint256[] memory opVal = getOptionStatus(i);
+            proposalInfo[i] = ProposalInfo({
+                description: Proposals[i].description,
+                options: Proposals[i].options,
+                optionsVal: opVal,
+                startTime: Proposals[i].startTime,
+                endTime: Proposals[i].endTime,
+                executed: Proposals[i].executed
+            });
+        }
+
+        return proposalInfo;
     }
     //["0x5B38Da6a701c568545dCfcB03FcB875f56beddC4","0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB","0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db"]
 }

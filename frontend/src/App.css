@@ -1,7 +1,8 @@
 body {
-  background: linear-gradient(45deg, black, #2c042b, #4d0606, #793d0d);
+  /* background: linear-gradient(45deg, black, #2c042b, #4d0606, #793d0d); */
+  background: linear-gradient(45deg, black, #a11f9d, #e85051, #fb9847);
   color: white;
 }
-.header {
+.headera {
   background: linear-gradient(45deg, black, #a11f9d, #e85051, #fb9847);
 }

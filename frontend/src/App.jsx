@@ -2,10 +2,19 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 
-import Box from "@mui/material/Box";
 import EthImg from "./assets/EthImage.png";
 import EthIcon from "./assets/ethereum.png";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  IconButton,
+  Box,
+  Alert,
+  Snackbar,
+} from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 function App() {
   //EtH values
@@ -31,6 +40,8 @@ function App() {
   const [startDate, setStartDate] = useState();
   const [endTime, setEndTime] = useState();
   const [endDate, setEndDate] = useState();
+
+  const [showAlert, setShowAlert] = useState(false);
 
   const ContractAddress = "0x7Fe766F35acED48a76c49e215D929604c9dD0991";
   const TokenContractAddress = "0x22072f8Ac3f2Dd4E635c9fF3b9bf44DeF9502268";
@@ -712,10 +723,10 @@ function App() {
       startTime: startTimeInEth,
       endTime: endTimeInEth,
     }));
-    setStartDate("");
-    setStartTime("");
-    setEndDate("");
-    setEndTime("");
+    // setStartDate("");
+    // setStartTime("");
+    // setEndDate("");
+    // setEndTime("");
   };
 
   const handleSubmit = async (e) => {
@@ -729,6 +740,11 @@ function App() {
       provider = new ethers.BrowserProvider(window.ethereum);
       signer = await provider.getSigner();
       console.log("now the signer is ", signer);
+    }
+
+    if (!formData.startTime || !formData.endTime) {
+      setShowAlert(true); // Set showAlert to true to display the alert
+      return; // Exit the function early
     }
 
     const contract = new ethers.Contract(ContractAddress, ABI, signer);
@@ -770,7 +786,18 @@ function App() {
 
   return (
     <Box className="body">
-      <Box className="header" height={{ xs: "100vh", md: "70vh" }}>
+      {showAlert && (
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={6000}
+          onClose={() => setShowAlert(false)}
+        >
+          <Alert severity="error" onClose={() => setShowAlert(false)}>
+            Please assign the time stamp!
+          </Alert>
+        </Snackbar>
+      )}
+      <Box className="header" mb={2} height={{ xs: "100vh", md: "70vh" }}>
         <Box display={"flex"} justifyContent={"right"} padding={4}>
           {walletAddress == "" ? (
             <Button variant="outlined" onClick={ConnectWallet}>
@@ -823,76 +850,157 @@ function App() {
           </Grid>
         </Grid>
       </Box>
-      <Box mt={2}>
-        <Typography variant="h4">Create a Proposal</Typography>
+      <Box
+        mt={14}
+        p={4}
+        bgcolor="rgba(0, 0, 0, 0.3)"
+        width={{ xs: "100%", md: "50%" }}
+        borderRadius={4}
+        ml={{ xs: "0", md: "25%" }}
+      >
+        <Typography variant="h4" textAlign={"center"}>
+          Create a Proposal
+        </Typography>
         <Box>
           <form onSubmit={handleSubmit}>
             <Box>
-              <label>Description:</label>
               <TextField
                 variant="standard"
+                fullWidth
                 type="text"
                 name="description"
+                placeholder="Write a Description for the Proposal"
+                style={{
+                  background: "white",
+                  borderRadius: "10px",
+                  paddingLeft: "5px",
+                }}
                 value={formData.description}
                 onChange={handleChange}
               />
             </Box>
             <Box>
-              <label>Options:</label>
-              {formData.options.map((option, index) => (
-                <Box key={index}>
-                  <input type="text" value={option} readOnly />
-                </Box>
-              ))}
-              <input
-                type="text"
-                name="options"
-                value={choice}
-                onChange={(e) => setChoice(e.target.value)}
-              />
-              <button type="button" onClick={handleOptionAdd}>
-                Add Option
-              </button>
+              <Box display={"flex"} flexWrap={"wrap"} m={2}>
+                <label style={{ fontSize: "20px", marginRight: "15px" }}>
+                  Options:
+                </label>
+                {formData.options.map((option, index) => (
+                  <Box key={index}>
+                    <Typography
+                      variant="h6"
+                      bgcolor={"white"}
+                      color={"black"}
+                      borderRadius={"10px"}
+                      pl={2}
+                      pr={2}
+                      mr={2}
+                      mb={1}
+                    >
+                      {option}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+              <Box display={"flex"} justifyContent={"center"} m={2}>
+                <TextField
+                  type="text"
+                  variant="standard"
+                  name="options"
+                  value={choice}
+                  onChange={(e) => setChoice(e.target.value)}
+                  placeholder="Add Options"
+                  style={{
+                    background: "white",
+                    borderRadius: "10px",
+                    paddingLeft: "5px",
+                  }}
+                />
+                <IconButton type="button" onClick={handleOptionAdd}>
+                  <AddCircleIcon style={{ color: "white" }} />
+                </IconButton>
+              </Box>
             </Box>
-            <Box>
-              <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
                 <label>Start Time (ETH):</label>
-                <input
-                  type="time"
-                  name="startTime"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                />
-                <input
-                  type="date"
-                  name="startDate"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </Box>
-              <Box>
+                <Box display={"flex"}>
+                  <TextField
+                    type="time"
+                    name="startTime"
+                    variant="standard"
+                    style={{
+                      marginRight: "5px",
+                      background: "white",
+                      borderRadius: "5px",
+                    }}
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                  <TextField
+                    type="date"
+                    name="startDate"
+                    variant="standard"
+                    style={{
+                      background: "white",
+                      borderRadius: "5px",
+                    }}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <label>End Time (ETH):</label>
-                <input
-                  type="time"
-                  name="endTime"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                />
-                <input
-                  type="date"
-                  name="endDate"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </Box>
-              <Box style={{ margin: "20px" }}>
-                <button type="button" onClick={handleTimeStamp}>
-                  Assign the Timestamp
-                </button>
-              </Box>
+                <Box display={"flex"}>
+                  <TextField
+                    type="time"
+                    name="endTime"
+                    variant="standard"
+                    style={{
+                      marginRight: "5px",
+                      background: "white",
+                      borderRadius: "5px",
+                    }}
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                  />
+                  <TextField
+                    type="date"
+                    name="endDate"
+                    variant="standard"
+                    style={{
+                      background: "white",
+                      borderRadius: "5px",
+                    }}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            <Box mt={2} display={"flex"} justifyContent={"center"}>
+              <Typography mr={4} mt={1}>
+                {startDate} {startTime} {startDate == null ? "----" : ""} - to -{" "}
+                {endDate} {endTime} {endDate == null ? "----" : ""}
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={handleTimeStamp}
+                style={{ background: "rgba(0, 0, 0, 0.5)" }}
+              >
+                Assign the Timestamp
+              </Button>
             </Box>
-
-            <button type="submit">Submit</button>
+            <Box mt={2} display={"flex"} justifyContent={"center"}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                style={{ background: "rgba(0, 0, 0, 0.5)" }}
+              >
+                Submit
+              </Button>
+            </Box>
           </form>
         </Box>
       </Box>
